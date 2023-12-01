@@ -6,58 +6,13 @@ public class RabbitMqService
 {
     private IConnection _connection{get;set;}
 
-    private ILogger _logger {get;set;}
 
-    public RabbitMqService(IConnection connection, ILogger logger)
+    public RabbitMqService(IConnection connection)
     {
         _connection = connection;
-
-        _logger = logger;
     }
 
-    public static async Task<IConnection> WaitUntilRabbitMqStart(ConnectionFactory factory)
-    {
-        CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
-        CancellationToken token = cancelTokenSource.Token;
-
-        Task<IConnection> t = Task.Run<IConnection>( () =>
-        {
-            bool b = true;
-            while(b)
-            {
-                if (token.IsCancellationRequested)
-                {
-                    return null;
-                }
-                try
-                {
-                    var connection = factory.CreateConnection();
-                    return connection;
-                }
-                catch (RabbitMQ.Client.Exceptions.BrokerUnreachableException)
-                {
-                    System.Threading.Thread.Sleep(TimeSpan.FromSeconds(2));
-                }
-            }
-
-            return null;
-        }, token);
-
-        t.Wait(16000);
-
-        if (t.IsCompletedSuccessfully)
-        {
-            return t.Result;
-        }
-        else
-        {
-            cancelTokenSource.Cancel();
-            var return_obj = await t;
-            return return_obj;
-        }
-
-        return null;
-    }
+    
 
     public void SendMessage(string message)
     {
@@ -78,5 +33,4 @@ public class RabbitMqService
 
         channel.Dispose();
     }
-
 }

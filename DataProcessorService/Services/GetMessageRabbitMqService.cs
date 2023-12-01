@@ -58,7 +58,7 @@ public class GetMessageRabbitMqService
                 return;
             }
 
-            _logger.LogInformation("ttttttttt");
+            _logger.LogInformation("Pass data convert stage");
 
             List<DeviceStatus> dev_list = new List<DeviceStatus>();
 
@@ -77,15 +77,15 @@ public class GetMessageRabbitMqService
                 _repo.AddModuleCategoty(list);
 
                 await _repo.SaveChanges();  
+
+                _logger.LogInformation("IF go to this point, then everythink ok");
+
             }
             catch
             {
                 _logger.LogError("Somethink went wrong with data write in db");
                 return;
-            }
-
-            _logger.LogInformation("iiiiiiiiiii");
-
+            }        
         };
 
         channel.BasicConsume(queue: "person_queue",
