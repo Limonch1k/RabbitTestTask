@@ -1,0 +1,36 @@
+version: '3'
+services:
+  producer:
+    build: 
+      context: FileParserService/
+      dockerfile: Dockerfile
+    networks:
+      - task_network
+    volumes:
+      - ./log:/app/log
+      - ./db:/db
+      - ./Example:/app/xml_file
+
+  consumer:
+    build: 
+      context: DataProcessorService/
+      dockerfile: Dockerfile
+    networks:
+      - task_network
+    volumes:
+      - ./log:/app/log
+      - ./db:/db
+      
+      
+  rabbit:
+    image: rabbitmq:management
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - 15672:15672
+    networks:
+      - task_network
+  
+networks:
+  task_network:
