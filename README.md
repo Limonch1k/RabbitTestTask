@@ -13,7 +13,31 @@
 В этой строчке 
 ENTRYPOINT  [ "dotnet", "DataProcessorService.dll", "rabbit", "guest", "guest", "/app/log/customer.log", "/db/ModuleCategory.db" ]
 это передаваемые параметры "rabbit", "guest", "guest", "/app/log/customer.log", "/db/ModuleCategory.db"
-Где: первый параметр (rabbit) это имя хоста сервиса RabbitMq 
+Где: первый параметр (rabbit) это имя хоста сервиса RabbitMq , чтобы его переименовать нужно в docker compose поменять имя контейнера с RabbitMq на другое
+Пример:
+      rabbit:
+    image: rabbitmq:management
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - 15672:15672
+    networks:
+      - task_network
+
+Меняем на:
+      Dogger:
+    image: rabbitmq:management
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - 15672:15672
+    networks:
+      - task_network
+
+Теперь Rabbit контейнер поднимется с таким хостом, после это нужно будет поменять rabbit на Dogger в ENTRYPOINT[]
+
 второй и третий (guest) это логин и пароль от сервиса RabbitMq
 четвертый (*.log) это имя файла лога, может быть любым, тут надо указывать полный путь, надо убедиться чтобы существовала папка в которой будет создавать лог файл
 пятый (*db) это полный путь до файла с базой,база сама не создается, если хотите поменять имя, либо переменуйте ее, либо создайте новую с такой структурой.
@@ -26,3 +50,4 @@ ENTRYPOINT  [ "dotnet", "DataProcessorService.dll", "rabbit", "guest", "guest", 
 Также
 На системе Windows у меня получилось проверить файл базы данных, там данные обновляются раз в секунду, программы работает как ожидается
 На системе Linux у меня не получилось проверить файл базы данных, но программа работает штатно.
+Можно проверить идет обмен сообщениями перейдя на вебморду RabbitMq по http://localhost:15672 или по файлам логов. 
